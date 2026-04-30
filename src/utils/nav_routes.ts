@@ -1,5 +1,6 @@
 export class NavRoutes {
-    static readonly DASHBOARD = "/";
+    static readonly LANDING = "/";
+    static readonly DASHBOARD = "/dashboard";
 
     static readonly LOGIN = "/login";
     static readonly REGISTER = "/register";

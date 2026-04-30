@@ -1,4 +1,5 @@
 import type { ReactNode, ReactElement } from 'react';
+import { C } from '../../utils/colors';
 
 interface AlertBannerProps {
   message: string;
@@ -7,10 +8,10 @@ interface AlertBannerProps {
 }
 
 const styles = {
-  success: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400',
-  error: 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400',
-  info: 'bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20 text-blue-600 dark:text-blue-400',
-  warning: 'bg-orange-50 dark:bg-orange-500/10 border-orange-200 dark:border-orange-500/20 text-orange-600 dark:text-orange-400',
+  success: `${C.successBg} ${C.successBorder} ${C.successText}`,
+  error: `${C.errorBg} ${C.errorBorder} ${C.errorText}`,
+  info: `${C.infoBg} ${C.infoBorder} ${C.infoText}`,
+  warning: `${C.warningBg} ${C.warningBorder} ${C.warningText}`,
 };
 
 const defaultIcons: Record<string, ReactElement> = {

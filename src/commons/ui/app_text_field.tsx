@@ -1,4 +1,5 @@
 import type { InputHTMLAttributes, ReactNode } from 'react';
+import { C } from '../../utils/colors';
 
 interface AppTextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -8,12 +9,11 @@ interface AppTextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const inputBase =
-  'w-full px-4 py-3 bg-slate-50/50 hover:bg-white focus:bg-white ' +
-  'dark:bg-slate-900/50 dark:hover:bg-slate-800 dark:focus:bg-slate-900 ' +
-  'border border-slate-200 dark:border-slate-700 rounded-xl ' +
-  'focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 ' +
-  'text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 ' +
-  'transition-all outline-none';
+  `w-full px-4 py-3 ${C.bgInput} ` +
+  `border ${C.borderInput} rounded-2xl ` +
+  `${C.focusRing} ` +
+  `text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 ` +
+  `${C.transition} outline-none shadow-sm hover:shadow-md`;
 
 const AppTextField = ({
   label,

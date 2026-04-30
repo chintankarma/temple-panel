@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ApiService from '../../../services/apiService';
+import ApiService from '../../../services/api_service';
 import { Eye, EyeOff } from 'lucide-react';
-import ThemeToggle from '../../../commons/ThemeToggle';
-import { useAuth } from '../../../context/AuthContext';
-import AppTextField from '../../../commons/ui/AppTextField';
-import AppButton from '../../../commons/ui/AppButton';
-import AlertBanner from '../../../commons/ui/AlertBanner';
+import ThemeToggle from '../../../commons/theme_toggle';
+import { useAuth } from '../../../context/auth_context';
+import AppTextField from '../../../commons/ui/app_text_field';
+import AppButton from '../../../commons/ui/app_button';
+import AlertBanner from '../../../commons/ui/alert_banner';
 import { NavRoutes } from '../../../utils/nav_routes';
+import { ApiRoutes } from '../../../utils/api_routes';
+import { C } from '../../../utils/colors';
 
 const Login = () => {
   const { login } = useAuth();
@@ -25,7 +27,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await ApiService.post('/auth/login', { email, password });
+      const response = await ApiService.post(`${ApiRoutes.AUTH_LOGIN}`, { email, password });
 
       if (response.success && response.account_type === 'temple') {
         if (response.token?.access_token) {
@@ -45,20 +47,29 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-orange-50/30 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-4 font-sans text-slate-900 dark:text-slate-100 transition-colors duration-300">
-      {/* Theme Toggle */}
-      <div className="absolute top-6 right-6 z-50">
+    <div className={`min-h-screen flex items-center justify-center p-4 font-sans ${C.textPrimary} transition-colors duration-500 overflow-hidden`}>
+      {/* Animated Mesh Background */}
+      <div className="mesh-bg"></div>
+
+      {/* Theme Toggle - adjusted for mobile */}
+      <div className="fixed top-4 right-4 sm:top-8 sm:right-8 z-50">
         <ThemeToggle />
       </div>
 
-      {/* Decorative background blobs */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-orange-600/10 dark:bg-orange-600/20 blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-orange-500/10 dark:bg-orange-500/20 blur-[120px]" />
+      {/* Floating Decorative Elements */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className={`absolute top-[10%] left-[5%] w-24 h-24 sm:w-32 sm:h-32 rounded-full ${C.blobTop} blur-2xl animate-bounce`} style={{ animationDuration: '6s' }} />
+        <div className={`absolute bottom-[10%] right-[5%] w-32 h-32 sm:w-48 sm:h-48 rounded-full ${C.blobBottom} blur-3xl animate-bounce`} style={{ animationDuration: '8s' }} />
+        <div className={`absolute top-[60%] right-[15%] w-16 h-16 sm:w-24 sm:h-24 rounded-full ${C.blobMid} blur-2xl animate-bounce`} style={{ animationDuration: '7s' }} />
+
+        {/* Logo Watermark Overlay */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] sm:w-[1200px] h-[600px] sm:h-[1200px] opacity-[0.05] dark:opacity-[0.03] rotate-[25deg] transition-all duration-1000">
+          <img src="/assets/icons/app_logo_icon.svg" alt="" className="w-full h-full object-contain" />
+        </div>
       </div>
 
-      <div className="relative z-10 w-full max-w-md animate-fade-in">
-        <div className="bg-white/90 dark:bg-slate-800/60 backdrop-blur-2xl border border-white/50 dark:border-slate-700/50 rounded-2xl shadow-2xl shadow-orange-900/5 dark:shadow-2xl p-8 sm:p-10 transition-all duration-300 hover:shadow-orange-900/10 dark:hover:shadow-orange-900/20">
+      <div className="relative z-10 w-full max-w-lg animate-fade-in px-4">
+        <div className={`bg-white/80 dark:bg-[#0f1115]/80 backdrop-blur-3xl border ${C.border} ${C.roundedCardLg} shadow-2xl shadow-slate-300/50 dark:shadow-none p-6 sm:p-14 ${C.transition}`}>
 
           {/* Header */}
           <div className="text-center mb-8">

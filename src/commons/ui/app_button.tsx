@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import { C } from '../../utils/colors';
 
 type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost';
 
@@ -28,20 +29,12 @@ const Spinner = () => (
 );
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary:
-    'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 ' +
-    'text-white shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 ' +
-    'focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900',
-  secondary:
-    'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 ' +
-    'hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700',
-  danger:
-    'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 ' +
-    'border border-red-200 dark:border-red-500/30',
-  ghost:
-    'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 ' +
-    'hover:bg-slate-50 dark:hover:bg-slate-800',
+  primary: `${C.btnPrimary} hover:shadow-orange-500/40 focus:ring-4 focus:ring-orange-500/20`,
+  secondary: `${C.btnSecondary} hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm hover:shadow-md`,
+  danger: `${C.btnDanger}`,
+  ghost: `${C.btnGhost} hover:text-slate-900 dark:hover:text-slate-100`,
 };
+
 
 const AppButton = ({
   variant = 'primary',
