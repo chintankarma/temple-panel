@@ -101,4 +101,7 @@ export const C = {
   shadowCard:    'shadow-2xl shadow-slate-200/60 dark:shadow-none',
   shadowCardSm:  'shadow-xl shadow-slate-200/50 dark:shadow-none',
   shadowSidebar: 'shadow-2xl shadow-slate-200/50 dark:shadow-none',
+  blobTop:       'bg-orange-500/20 dark:bg-orange-500/10',
+  blobBottom:    'bg-indigo-500/20 dark:bg-indigo-500/10',
+  blobMid:       'bg-emerald-500/20 dark:bg-emerald-500/10',
 };

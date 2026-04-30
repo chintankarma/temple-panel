@@ -1,11 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import TempleForm from './screens/temple_screen/temple_form_screen/temple_form';
 import { NavRoutes } from './utils/nav_routes';
-import Layout from './commons/layout/Layout';
-import Landing from './screens/landing_screen/Landing';
-import Login from './screens/authentication_screens/login_screen/Login';
-import Register from './screens/authentication_screens/register_screen/Register';
-import Dashboard from './screens/dashboard_screen/Dashboard';
+import Layout from './commons/layout/layout';
+import Landing from './screens/landing_screen/landing';
+import Login from './screens/authentication_screens/login_screen/login';
+import Register from './screens/authentication_screens/register_screen/register';
+import Dashboard from './screens/dashboard_screen/dashboard';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const token = localStorage.getItem('token');
