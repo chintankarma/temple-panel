@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 // Ensure consistent base URL targeting the proxy setup or direct backend
-const BASE_URL = 'https://node-temple-backend.onrender.com/api';
+const BASE_URL = 'http://localhost:3000/api';
 
 const apiInstance: AxiosInstance = axios.create({
   baseURL: BASE_URL,

@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ApiService from '../../../services/api_service';
-import { Save, X } from 'lucide-react';
+import { Save, X, GripVertical } from 'lucide-react';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useAuth } from '../../../context/auth_context';
 import AppTextField from '../../../commons/ui/app_text_field';
 import AppTextArea from '../../../commons/ui/app_text_area';
@@ -14,7 +15,8 @@ import { C } from '../../../utils/colors';
 
 const TempleForm = () => {
   const { user, updateUser } = useAuth();
-  const [activeTab, setActiveTab] = useState('basic');
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'basic');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' as 'success' | 'error' | '' });
   const navigate = useNavigate();
@@ -38,7 +40,8 @@ const TempleForm = () => {
     temple_images_list: [] as (File | string)[],
     geography_image: [] as (File | string)[],
     position_image: [] as (File | string)[],
-    history_images_list: [] as (File | string)[]
+    history_images_list: [] as (File | string)[],
+    gallery: [] as { title: string; images: (File | string)[] }[]
   });
 
   useEffect(() => {
@@ -63,6 +66,10 @@ const TempleForm = () => {
         geography_image: user.temple_history?.geography_image ? [user.temple_history.geography_image] : [],
         position_image: user.temple_position?.position_image ? [user.temple_position.position_image] : [],
         history_images_list: user.temple_history?.history_images_list || [],
+        gallery: (user.gallery || []).map((album: any) => ({
+          title: album.title || '',
+          images: album.images || []
+        }))
       });
     }
   }, [user]);
@@ -106,6 +113,17 @@ const TempleForm = () => {
           newFiles.forEach(f => {
             data.append(key, f as File);
           });
+        } else if (key === 'gallery') {
+          // New Simplified Gallery Logic
+          const gallery = value as { title: string; images: (File | string)[] }[];
+          const structure = gallery.map((album, index) => {
+            const existing = album.images.filter(img => typeof img === 'string');
+            const files = album.images.filter(img => typeof img !== 'string') as File[];
+            
+            files.forEach(file => data.append(`gallery_files_${index}`, file));
+            return { title: album.title, images: existing };
+          });
+          data.append('gallery', JSON.stringify(structure));
         } else {
           data.append(key, value as string);
         }
@@ -125,7 +143,10 @@ const TempleForm = () => {
       setMessage({ text: error.response?.data?.message || 'Failed to update temple', type: 'error' });
     } finally {
       setLoading(false);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const mainContent = document.getElementById('main-content');
+      if (mainContent) {
+        mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
   };
 
@@ -144,18 +165,24 @@ const TempleForm = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto pb-20">
-      <div className={`${C.bgCard} border ${C.border} ${C.roundedCard} ${C.shadowCard} ${C.transition} overflow-hidden`}>
+    <>
+      {/* Alert Banner - Completely outside the main box */}
+      {message.text && message.type && (
+        <div className="max-w-5xl mx-auto mb-6 animate-fade-in">
+          <AlertBanner 
+            message={message.text} 
+            type={message.type as 'success' | 'error'} 
+            onClose={() => setMessage({ text: '', type: '' })}
+          />
+        </div>
+      )}
 
-        {/* Alert Banner */}
-        {message.text && message.type && (
-          <div className="mx-6 sm:mx-10 mt-6 sm:mt-10">
-            <AlertBanner message={message.text} type={message.type as 'success' | 'error'} />
-          </div>
-        )}
+      <div className="max-w-5xl mx-auto pb-20">
+        <div className={`${C.bgCard} border ${C.border} ${C.roundedCard} ${C.shadowCard} ${C.transition} overflow-hidden`}>
+
 
         {/* Tabs */}
-        <div 
+        <div
           ref={tabsRef}
           className="flex justify-start md:justify-center overflow-x-auto border-b border-slate-200 dark:border-slate-800/50 transition-colors duration-300 no-scrollbar px-4 relative"
         >
@@ -163,7 +190,8 @@ const TempleForm = () => {
             { id: 'basic', label: 'Basic Details', icon: '/assets/icons/dashboard/temple_icon.svg' },
             { id: 'about', label: 'About', icon: '/assets/icons/visit/plan_tour_icon.svg' },
             { id: 'history', label: 'History', icon: '/assets/icons/shri_kashi_vishwanath/history_icon.svg' },
-            { id: 'position', label: 'Position', icon: '/assets/icons/shri_kashi_vishwanath/position_icon.svg' }
+            { id: 'position', label: 'Position', icon: '/assets/icons/shri_kashi_vishwanath/position_icon.svg' },
+            { id: 'gallery', label: 'Gallery', icon: '/assets/icons/shri_kashi_vishwanath/gallery_icon.svg' }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -252,7 +280,112 @@ const TempleForm = () => {
                 <AppTextArea label="About District" name="about_district" rows={6} value={formData.about_district} onChange={handleChange} />
               </div>
             )}
-          </div>
+
+            {/* Gallery Tab (New Clean Implementation) */}
+            {activeTab === 'gallery' && (
+              <div className="animate-fade-in space-y-8">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Temple Gallery</h3>
+                  <AppButton
+                    type="button"
+                    variant="secondary"
+                    onClick={() => {
+                      setFormData(prev => ({
+                        ...prev,
+                        gallery: [...prev.gallery, { title: '', images: [] }]
+                      }));
+                    }}
+                  >
+                    Add New Album
+                  </AppButton>
+                </div>
+
+                <DragDropContext onDragEnd={(result) => {
+                  if (!result.destination) return;
+                  const newGallery = Array.from(formData.gallery);
+                  const [reorderedItem] = newGallery.splice(result.source.index, 1);
+                  newGallery.splice(result.destination.index, 0, reorderedItem);
+                  setFormData(prev => ({ ...prev, gallery: newGallery }));
+                }}>
+                  <Droppable droppableId="albums">
+                    {(provided) => (
+                      <div 
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        className="space-y-6"
+                      >
+                        {formData.gallery.map((album, index) => (
+                          <Draggable key={`album-${index}`} draggableId={`album-${index}`} index={index}>
+                            {(provided, snapshot) => (
+                              <div 
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                className={`p-6 border ${C.border} ${C.roundedCard} bg-slate-50/50 dark:bg-slate-900/20 relative group transition-all duration-300
+                                  ${snapshot.isDragging ? 'shadow-2xl scale-[1.02] z-50 bg-white dark:bg-slate-800 ring-2 ring-orange-500' : ''}`}
+                              >
+                                {/* Album Drag Handle */}
+                                <div 
+                                  {...provided.dragHandleProps}
+                                  className="absolute top-4 left-4 p-2 text-slate-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 rounded-xl transition-all cursor-grab active:cursor-grabbing"
+                                  title="Drag to reorder album"
+                                >
+                                  <GripVertical size={20} />
+                                </div>
+
+                                <button
+                                  type="button"
+                                  className="absolute top-4 right-4 p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-full transition-all duration-200"
+                                  onClick={() => {
+                                    const newGallery = [...formData.gallery];
+                                    newGallery.splice(index, 1);
+                                    setFormData(prev => ({ ...prev, gallery: newGallery }));
+                                  }}
+                                >
+                                  <X size={18} />
+                                </button>
+
+                      <div className="grid grid-cols-1 gap-6">
+                        <AppTextField
+                          label={`Album ${index + 1} Name`}
+                          value={album.title}
+                          onChange={(e) => {
+                            const newGallery = [...formData.gallery];
+                            newGallery[index].title = e.target.value;
+                            setFormData(prev => ({ ...prev, gallery: newGallery }));
+                          }}
+                          placeholder="e.g. Annual Festival, Morning Aarti"
+                        />
+
+                        <AppImageUpload
+                          name={`gallery_album_${index}`}
+                          label="Photos"
+                          multiple={true}
+                          value={album.images}
+                          onChange={(files) => {
+                            const newGallery = [...formData.gallery];
+                            newGallery[index].images = files;
+                            setFormData(prev => ({ ...prev, gallery: newGallery }));
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+
+      {formData.gallery.length === 0 && (
+        <div className="text-center py-16 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[2rem] bg-white dark:bg-slate-900/30">
+          <div className="text-slate-400 mb-2 italic">Your gallery is empty.</div>
+          <p className="text-sm text-slate-500">Create your first album to showcase temple photos.</p>
+        </div>
+      )}
+      </div>
+    )}
 
           {/* Form Actions */}
           <div className="flex flex-col sm:flex-row items-center justify-end gap-4 mt-10 pt-6 border-t border-slate-100 dark:border-slate-800 transition-colors duration-300">
@@ -276,9 +409,11 @@ const TempleForm = () => {
               Save Changes
             </AppButton>
           </div>
-        </form>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

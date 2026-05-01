@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, UploadCloud } from 'lucide-react';
+import { X, UploadCloud, GripVertical } from 'lucide-react';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import type { DropResult } from '@hello-pangea/dnd';
 
 interface AppImageUploadProps {
   label: string;
@@ -11,18 +13,22 @@ interface AppImageUploadProps {
 
 const AppImageUpload: React.FC<AppImageUploadProps> = ({ label, multiple = false, value = [], onChange }) => {
   const [isDragging, setIsDragging] = useState(false);
-  const [previews, setPreviews] = useState<{ url: string; file: File | string }[]>([]);
+  const [previews, setPreviews] = useState<{ url: string; file: File | string; id: string }[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     // Generate previews for the provided value
-    const newPreviews = value.map(item => {
+    const safeValue = Array.isArray(value) ? value : [];
+    const newPreviews = safeValue.map((item, index) => {
       if (typeof item === 'string') {
-        return { url: item, file: item }; // existing URL
-      } else {
-        return { url: URL.createObjectURL(item), file: item }; // new File
+        if (item.trim() === '') return null;
+        return { url: item, file: item, id: `existing-${item}-${index}` }; // existing URL
+      } else if (item instanceof File) {
+        return { url: URL.createObjectURL(item), file: item, id: `new-${item.name}-${index}` }; // new File
       }
-    });
+      return null;
+    }).filter(Boolean) as { url: string; file: File | string; id: string }[] ;
+    
     setPreviews(newPreviews);
 
     // Cleanup object URLs
@@ -77,6 +83,16 @@ const AppImageUpload: React.FC<AppImageUploadProps> = ({ label, multiple = false
     onChange(updatedFiles);
   };
 
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+    
+    const items = Array.from(value);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+    
+    onChange(items);
+  };
+
   return (
     <div className="mb-6">
       <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
@@ -84,7 +100,7 @@ const AppImageUpload: React.FC<AppImageUploadProps> = ({ label, multiple = false
       </label>
 
       <div
-        className={`relative border-2 border-dashed rounded-[2rem] p-8 transition-all duration-300 flex flex-col items-center justify-center min-h-[180px]
+        className={`relative border-2 border-dashed rounded-[2rem] p-8 transition-all duration-300 flex flex-col items-center justify-center min-h-[180px] cursor-pointer
           ${isDragging
             ? 'border-orange-500 bg-orange-50 dark:bg-orange-500/10'
             : 'border-slate-200 dark:border-slate-800 hover:border-orange-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900/50'
@@ -113,33 +129,62 @@ const AppImageUpload: React.FC<AppImageUploadProps> = ({ label, multiple = false
       </div>
 
       {previews.length > 0 && (
-        <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {previews.map((preview, index) => (
-            <div key={index} className="relative group rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 aspect-video bg-slate-50 dark:bg-slate-900 flex items-center justify-center shadow-sm">
-              <img
-                src={preview.url}
-                alt={`Preview ${index}`}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = 'https://placehold.co/400x225/png?text=Image+Not+Found';
-                }}
-              />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center backdrop-blur-[2px]">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeFile(index);
-                  }}
-                  className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
-                  title="Remove image"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="images" direction="horizontal">
+            {(provided) => (
+              <div 
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
+              >
+                {previews.map((preview, index) => (
+                  <Draggable key={preview.id} draggableId={preview.id} index={index}>
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        className={`relative group rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 aspect-video bg-slate-50 dark:bg-slate-900 flex items-center justify-center shadow-sm transition-all
+                          ${snapshot.isDragging ? 'shadow-2xl scale-105 z-50 ring-2 ring-orange-500' : 'hover:shadow-md'}`}
+                      >
+                        <img
+                          src={preview.url}
+                          alt={`Preview ${index}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = 'https://placehold.co/400x225/png?text=Image+Not+Found';
+                          }}
+                        />
+                        
+                        {/* Drag Handle */}
+                        <div 
+                          {...provided.dragHandleProps}
+                          className="absolute top-2 left-2 p-1.5 bg-white/80 dark:bg-slate-800/80 rounded-lg text-slate-600 dark:text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing shadow-sm backdrop-blur-sm"
+                        >
+                          <GripVertical size={14} />
+                        </div>
+
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center backdrop-blur-[2px]">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeFile(index);
+                            }}
+                            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                            title="Remove image"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
               </div>
-            </div>
-          ))}
-        </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       )}
     </div>
   );

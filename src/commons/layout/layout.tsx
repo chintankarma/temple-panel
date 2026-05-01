@@ -110,7 +110,7 @@ const Layout = ({ children }: LayoutProps) => {
           </header>
 
           {/* Page Content */}
-          <div className="flex-1 overflow-y-auto p-4 sm:p-8 relative z-10 custom-scrollbar">
+          <div id="main-content" className="flex-1 overflow-y-auto p-4 sm:p-8 relative z-10 custom-scrollbar">
             <div className="max-w-6xl mx-auto animate-fade-in">
               {children}
             </div>

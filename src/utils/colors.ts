@@ -89,6 +89,7 @@ export const C = {
   iconOrange:    'bg-[#FF8044]/15 text-[#FF8044]',
   iconIndigo:    'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400',
   iconEmerald:   'bg-[#00C853]/15 text-[#00C853]',
+  iconRose:      'bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400',
 
   focusRing:     'focus:ring-4 focus:ring-[#FF8044]/30 focus:border-[#FF8044]',
   scrollbarThumb: 'rgba(255, 128, 68, 0.3)',

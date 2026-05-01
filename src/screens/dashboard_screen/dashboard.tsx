@@ -25,41 +25,59 @@ const Dashboard = () => {
             </p>
             <button
               className={`group flex items-center gap-3 ${C.brandBg} text-white px-8 py-4 rounded-2xl font-bold transition-all duration-300 shadow-xl ${C.brandShadow} hover:-translate-y-1`}
-              onClick={() => navigate(NavRoutes.TEMPLE_EDIT)}
+              onClick={() => navigate(NavRoutes.TEMPLE_EDIT, { state: { activeTab: 'basic' } })}
             >
               Update Temple Profile
               <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
-          <div className="hidden lg:block w-56 h-36 rounded-3xl overflow-hidden shadow-2xl -rotate-2 border-8 border-white dark:border-slate-800 flex-shrink-0 transition-all duration-500 hover:rotate-0 hover:scale-110">
-            <img src="/assets/images/info/info_image_1.png" alt="Temple" className="w-full h-full object-cover" />
+          <div className="hidden lg:block w-56 h-36 rounded-3xl overflow-hidden shadow-2xl -rotate-2 border-8 border-white dark:border-slate-800 flex-shrink-0 transition-all duration-500 hover:rotate-0 hover:scale-110 bg-slate-100 dark:bg-slate-800">
+            <img 
+              src={user?.temple_about?.temple_images_list?.[0] || "/assets/images/info/info_image_1.png"} 
+              alt={user?.name || "Temple"} 
+              className="w-full h-full object-cover" 
+            />
           </div>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {[
           {
             icon: '/assets/icons/dashboard/temple_icon.svg',
             title: 'Basic Details',
-            desc: "Manage your temple's name, primary timings, contact info, and operational details.",
-            color: C.iconOrange
+            desc: "Update your temple's name, primary timings, contact info, and operational details.",
+            color: C.iconOrange,
+            tab: 'basic'
           },
           {
             icon: '/assets/icons/shri_kashi_vishwanath/history_icon.svg',
             title: 'History & Lore',
             desc: "Update the rich history, detailed descriptions, and historical significance.",
-            color: C.iconIndigo
+            color: C.iconIndigo,
+            tab: 'history'
           },
           {
             icon: '/assets/icons/shri_kashi_vishwanath/position_icon.svg',
             title: 'Location & Position',
             desc: "Manage address mapping, precise coordinates, and geographic data.",
-            color: C.iconEmerald
+            color: C.iconEmerald,
+            tab: 'position'
+          },
+          {
+            icon: '/assets/icons/shri_kashi_vishwanath/gallery_icon.svg',
+            title: 'Temple Gallery',
+            desc: "Manage and update your temple's photo albums and gallery collections.",
+            color: C.iconRose,
+            tab: 'gallery'
           }
         ].map((item, i) => (
-          <div key={i} className={`premium-card group ${C.bgCard} border ${C.border} ${C.roundedCardMd} p-8 hover:border-orange-500/30 ${C.transition} ${C.shadowCardSm}`}>
+          <div
+            key={i}
+            className={`premium-card group ${C.bgCard} border ${C.border} ${C.roundedCardMd} p-8 hover:border-orange-500/30 ${C.transition} ${C.shadowCardSm} cursor-pointer hover:shadow-2xl hover:-translate-y-2`}
+            onClick={() => navigate(NavRoutes.TEMPLE_EDIT, { state: { activeTab: item.tab } })}
+          >
             <div className={`w-16 h-16 rounded-2xl ${item.color} flex items-center justify-center mb-8 group-hover:scale-110 transition-transform p-4`}>
               <img src={item.icon} alt={item.title} className="w-full h-full object-contain icon-adaptive" />
             </div>

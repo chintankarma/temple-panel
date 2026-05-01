@@ -1,10 +1,12 @@
 import type { ReactNode, ReactElement } from 'react';
+import { X } from 'lucide-react';
 import { C } from '../../utils/colors';
 
 interface AlertBannerProps {
   message: string;
   type: 'success' | 'error' | 'info' | 'warning';
   icon?: ReactNode;
+  onClose?: () => void;
 }
 
 const styles = {
@@ -37,12 +39,22 @@ const defaultIcons: Record<string, ReactElement> = {
   ),
 };
 
-const AlertBanner = ({ message, type, icon }: AlertBannerProps) => {
+const AlertBanner = ({ message, type, icon, onClose }: AlertBannerProps) => {
   if (!message) return null;
   return (
-    <div className={`p-4 rounded-xl flex items-center border text-sm shadow-inner ${styles[type]}`}>
-      {icon ?? defaultIcons[type]}
-      <span>{message}</span>
+    <div className={`p-4 rounded-xl flex items-center justify-between border text-sm shadow-inner animate-fade-in ${styles[type]}`}>
+      <div className="flex items-center">
+        {icon ?? defaultIcons[type]}
+        <span>{message}</span>
+      </div>
+      {onClose && (
+        <button
+          onClick={onClose}
+          className="ml-4 p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+        >
+          <X size={16} />
+        </button>
+      )}
     </div>
   );
 };
