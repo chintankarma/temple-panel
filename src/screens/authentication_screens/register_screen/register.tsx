@@ -9,6 +9,7 @@ import AlertBanner from '../../../commons/ui/alert_banner';
 import { NavRoutes } from '../../../utils/nav_routes';
 import { ApiRoutes } from '../../../utils/api_routes';
 import { C } from '../../../utils/colors';
+import { ASSETS } from '../../../utils/assets';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -82,7 +83,7 @@ const Register = () => {
           {/* Header */}
           <div className="text-center mb-10">
             <div className="flex justify-center mb-4">
-              <img src="/assets/icons/app_logo_icon.svg" alt="Temple Guide Logo" className="w-16 h-16 object-contain drop-shadow-xl" />
+              <img src={ASSETS.icons.logo} alt="Temple Guide Logo" className="w-16 h-16 object-contain drop-shadow-xl" />
             </div>
             <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-orange-600 dark:from-orange-400 dark:to-orange-600 bg-clip-text text-transparent mb-2">
               Register Your Temple

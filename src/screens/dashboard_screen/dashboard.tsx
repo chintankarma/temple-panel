@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/auth_context';
 import { NavRoutes } from '../../utils/nav_routes';
 import { C } from '../../utils/colors';
+import { ASSETS } from '../../utils/assets';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -32,41 +33,41 @@ const Dashboard = () => {
             </button>
           </div>
           <div className="hidden lg:block w-56 h-36 rounded-3xl overflow-hidden shadow-2xl -rotate-2 border-8 border-white dark:border-slate-800 flex-shrink-0 transition-all duration-500 hover:rotate-0 hover:scale-110 bg-slate-100 dark:bg-slate-800">
-            <img 
-              src={user?.temple_about?.temple_images_list?.[0] || "/assets/images/info/info_image_1.png"} 
-              alt={user?.name || "Temple"} 
-              className="w-full h-full object-cover" 
+            <img
+              src={user?.temple_about?.temple_images_list?.[0] || ASSETS.images.placeholderInfo}
+              alt={user?.name || "Temple"}
+              className="w-full h-full object-cover"
             />
           </div>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           {
-            icon: '/assets/icons/dashboard/temple_icon.svg',
+            icon: ASSETS.icons.temple,
             title: 'Basic Details',
             desc: "Update your temple's name, primary timings, contact info, and operational details.",
             color: C.iconOrange,
             tab: 'basic'
           },
           {
-            icon: '/assets/icons/shri_kashi_vishwanath/history_icon.svg',
+            icon: ASSETS.icons.history,
             title: 'History & Lore',
             desc: "Update the rich history, detailed descriptions, and historical significance.",
             color: C.iconIndigo,
             tab: 'history'
           },
           {
-            icon: '/assets/icons/shri_kashi_vishwanath/position_icon.svg',
+            icon: ASSETS.icons.position,
             title: 'Location & Position',
             desc: "Manage address mapping, precise coordinates, and geographic data.",
             color: C.iconEmerald,
             tab: 'position'
           },
           {
-            icon: '/assets/icons/shri_kashi_vishwanath/gallery_icon.svg',
+            icon: ASSETS.icons.gallery,
             title: 'Temple Gallery',
             desc: "Manage and update your temple's photo albums and gallery collections.",
             color: C.iconRose,
@@ -82,7 +83,7 @@ const Dashboard = () => {
               <img src={item.icon} alt={item.title} className="w-full h-full object-contain icon-adaptive" />
             </div>
             <h3 className={`text-xl font-bold ${C.textHeading} mb-3 ${C.transition}`}>{item.title}</h3>
-            <p className={`${C.textSecondary} leading-relaxed ${C.transition} font-light`}>{item.desc}</p>
+            <p className={`${C.textSecondary} leading-relaxed ${C.transition}`}>{item.desc}</p>
           </div>
         ))}
       </div>

@@ -6,6 +6,7 @@ import ConfirmationModal from '../confirmation_modal';
 import { useAuth } from '../../context/auth_context';
 import { NavRoutes } from '../../utils/nav_routes';
 import { C } from '../../utils/colors';
+import { ASSETS } from '../../utils/assets';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -52,7 +53,7 @@ const Layout = ({ children }: LayoutProps) => {
         `}>
           <div className="p-6 flex items-center justify-between">
             <Link to={NavRoutes.DASHBOARD} className="text-2xl font-bold bg-gradient-to-r from-orange-500 to-orange-600 dark:from-orange-400 dark:to-orange-600 bg-clip-text text-transparent flex items-center gap-2">
-              <img src="/assets/icons/app_logo_icon.svg" alt="Temple Guide Logo" className="w-10 h-10 object-contain" />
+              <img src={ASSETS.icons.logo} alt="Temple Guide Logo" className="w-10 h-10 object-contain" />
               Temple Guide
             </Link>
             <button className="lg:hidden p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsSidebarOpen(false)}>

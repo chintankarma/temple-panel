@@ -10,6 +10,7 @@ import AlertBanner from '../../../commons/ui/alert_banner';
 import { NavRoutes } from '../../../utils/nav_routes';
 import { ApiRoutes } from '../../../utils/api_routes';
 import { C } from '../../../utils/colors';
+import { ASSETS } from '../../../utils/assets';
 
 const Login = () => {
   const { login } = useAuth();
@@ -64,7 +65,7 @@ const Login = () => {
 
         {/* Logo Watermark Overlay */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] sm:w-[1200px] h-[600px] sm:h-[1200px] opacity-[0.05] dark:opacity-[0.03] rotate-[25deg] transition-all duration-1000">
-          <img src="/assets/icons/app_logo_icon.svg" alt="" className="w-full h-full object-contain" />
+          <img src={ASSETS.icons.logo} alt="" className="w-full h-full object-contain" />
         </div>
       </div>
 
@@ -74,7 +75,7 @@ const Login = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <img src="/assets/icons/app_logo_icon.svg" alt="Temple Guide Logo" className="w-16 h-16 object-contain drop-shadow-xl" />
+              <img src={ASSETS.icons.logo} alt="Temple Guide Logo" className="w-16 h-16 object-contain drop-shadow-xl" />
             </div>
             <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-orange-600 dark:from-orange-400 dark:to-orange-600 bg-clip-text text-transparent mb-2">
               Temple Guide

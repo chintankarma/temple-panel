@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, UploadCloud, GripVertical } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import type { DropResult } from '@hello-pangea/dnd';
@@ -139,45 +140,50 @@ const AppImageUpload: React.FC<AppImageUploadProps> = ({ label, multiple = false
               >
                 {previews.map((preview, index) => (
                   <Draggable key={preview.id} draggableId={preview.id} index={index}>
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        className={`relative group rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 aspect-video bg-slate-50 dark:bg-slate-900 flex items-center justify-center shadow-sm transition-all
-                          ${snapshot.isDragging ? 'shadow-2xl scale-105 z-50 ring-2 ring-orange-500' : 'hover:shadow-md'}`}
-                      >
-                        <img
-                          src={preview.url}
-                          alt={`Preview ${index}`}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = 'https://placehold.co/400x225/png?text=Image+Not+Found';
-                          }}
-                        />
-                        
-                        {/* Drag Handle */}
-                        <div 
+                    {(provided, snapshot) => {
+                      const content = (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className="absolute top-2 left-2 p-1.5 bg-white/80 dark:bg-slate-800/80 rounded-lg text-slate-600 dark:text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing shadow-sm backdrop-blur-sm"
+                          className={`relative group/image rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 aspect-video bg-slate-50 dark:bg-slate-900 flex items-center justify-center shadow-sm
+                            ${snapshot.isDragging ? 'shadow-2xl scale-105 z-50 ring-2 ring-orange-500' : 'hover:shadow-md transition-all duration-300'}`}
+                          style={{
+                            ...provided.draggableProps.style,
+                            // If dragging, fix the width/height to match the original size
+                            ...(snapshot.isDragging ? { width: '200px', height: '112.5px' } : {})
+                          }}
                         >
-                          <GripVertical size={14} />
-                        </div>
-
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center backdrop-blur-[2px]">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              removeFile(index);
+                          <img
+                            src={preview.url}
+                            alt={`Preview ${index}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'https://placehold.co/400x225/png?text=Image+Not+Found';
                             }}
-                            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
-                            title="Remove image"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
+                          />
+
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/image:opacity-100 transition-opacity duration-200 flex items-center justify-center backdrop-blur-[2px]">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeFile(index);
+                              }}
+                              className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                              title="Remove image"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      );
+
+                      if (snapshot.isDragging) {
+                        return createPortal(content, document.body);
+                      }
+                      return content;
+                    }}
                   </Draggable>
                 ))}
                 {provided.placeholder}

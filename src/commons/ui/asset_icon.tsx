@@ -1,9 +1,9 @@
 /**
- * AssetIcon — renders any SVG from /assets/ using CSS mask-image.
+ * AssetIcon — renders any SVG from ASSETS using CSS mask-image.
  * Inherits the EXACT parent text color via `currentColor` (no filter approximation).
  *
  * Usage:
- *   <AssetIcon src="/assets/icons/dashboard/temple_icon.svg" className="w-5 h-5" />
+ *   <AssetIcon src={ASSETS.icons.temple} className="w-5 h-5" />
  */
 
 interface AssetIconProps {
